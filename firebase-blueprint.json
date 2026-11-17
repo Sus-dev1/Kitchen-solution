@@ -1,0 +1,300 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User kitchen profile and dietary preferences.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated user UID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Chef display name."
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address."
+        },
+        "dietType": {
+          "type": "string",
+          "description": "Dietary preference such as Halal / General."
+        },
+        "allergies": {
+          "type": "string",
+          "description": "Food allergies list."
+        },
+        "defaultServings": {
+          "type": "integer",
+          "description": "Default number of servings."
+        },
+        "seededDefaults": {
+          "type": "boolean",
+          "description": "Whether initial starter kitchen data has been seeded."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "displayName",
+        "email",
+        "dietType",
+        "allergies",
+        "defaultServings",
+        "seededDefaults",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PantryItem": {
+      "title": "PantryItem",
+      "description": "Ingredient item stored in the user's Smart Pantry.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Ingredient name."
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Current stock quantity."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Measurement unit (g, pcs, siung, kg, L, sdm)."
+        },
+        "stepDelta": {
+          "type": "integer",
+          "description": "Increment/decrement step size."
+        },
+        "location": {
+          "type": "string",
+          "description": "Storage location (Kulkas, Suhu Ruang, Freezer, Rak Dapur)."
+        },
+        "daysUntilExpiry": {
+          "type": "integer",
+          "description": "Remaining days until expiry."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category key for icon and grouping."
+        },
+        "lowThreshold": {
+          "type": "integer",
+          "description": "Quantity threshold for low-stock alert."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "name",
+        "quantity",
+        "unit",
+        "stepDelta",
+        "location",
+        "daysUntilExpiry",
+        "category",
+        "lowThreshold",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ShoppingItem": {
+      "title": "ShoppingItem",
+      "description": "Item in the user's grocery shopping list.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Shopping item name and quantity."
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "Whether the item has been purchased."
+        },
+        "sourceTag": {
+          "type": "string",
+          "description": "Origin tag such as Auto AI or Manual."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "name",
+        "checked",
+        "sourceTag",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "JournalNote": {
+      "title": "JournalNote",
+      "description": "Personal cooking journal note and recipe tip.",
+      "type": "object",
+      "properties": {
+        "recipeTitle": {
+          "type": "string",
+          "description": "Recipe title for the journal entry."
+        },
+        "note": {
+          "type": "string",
+          "description": "Cooking notes or secret seasoning tips."
+        },
+        "rating": {
+          "type": "number",
+          "description": "Rating from 1.0 to 5.0."
+        },
+        "dateLabel": {
+          "type": "string",
+          "description": "Formatted display date label."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "recipeTitle",
+        "note",
+        "rating",
+        "dateLabel",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SavedRecipe": {
+      "title": "SavedRecipe",
+      "description": "Bookmarked or user-authored custom recipe saved for quick cooking and offline use.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "durationMinutes": { "type": "integer" },
+        "servings": { "type": "integer" },
+        "difficulty": { "type": "string" },
+        "categoryName": { "type": "string" },
+        "isCustom": { "type": "boolean" },
+        "caloriesKcal": { "type": "integer" },
+        "proteinGrams": { "type": "integer" },
+        "carbsGrams": { "type": "integer" },
+        "fatGrams": { "type": "integer" },
+        "ingredientsSerialized": { "type": "string" },
+        "stepsSerialized": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "title",
+        "description",
+        "durationMinutes",
+        "servings",
+        "difficulty",
+        "categoryName",
+        "isCustom",
+        "caloriesKcal",
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams",
+        "ingredientsSerialized",
+        "stepsSerialized",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MealPlanEntry": {
+      "title": "MealPlanEntry",
+      "description": "Weekly meal planner assignment for a day and meal slot.",
+      "type": "object",
+      "properties": {
+        "dayOfWeek": { "type": "string" },
+        "mealSlot": { "type": "string" },
+        "recipeId": { "type": "string" },
+        "recipeTitle": { "type": "string" },
+        "servings": { "type": "integer" },
+        "missingItemsSummary": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "dayOfWeek",
+        "mealSlot",
+        "recipeId",
+        "recipeTitle",
+        "servings",
+        "missingItemsSummary",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Authenticated user's kitchen profile and preferences."
+    },
+    "/users/{userId}/pantry_items/{itemId}": {
+      "schema": {
+        "$ref": "#/entities/PantryItem"
+      },
+      "description": "Authenticated user's Smart Pantry ingredient stock."
+    },
+    "/users/{userId}/shopping_items/{itemId}": {
+      "schema": {
+        "$ref": "#/entities/ShoppingItem"
+      },
+      "description": "Authenticated user's grocery shopping list."
+    },
+    "/users/{userId}/journal_notes/{noteId}": {
+      "schema": {
+        "$ref": "#/entities/JournalNote"
+      },
+      "description": "Authenticated user's personal cooking journal entries."
+    },
+    "/users/{userId}/saved_recipes/{recipeId}": {
+      "schema": {
+        "$ref": "#/entities/SavedRecipe"
+      },
+      "description": "Authenticated user's bookmarked and custom family recipes."
+    },
+    "/users/{userId}/meal_plans/{planId}": {
+      "schema": {
+        "$ref": "#/entities/MealPlanEntry"
+      },
+      "description": "Authenticated user's weekly meal planner schedule."
+    }
+  }
+}

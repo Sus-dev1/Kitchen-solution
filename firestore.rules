@@ -1,0 +1,280 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp && ts <= request.time;
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 60 &&
+             data.email is string && data.email.size() <= 120 &&
+             data.dietType is string && data.dietType.size() >= 1 && data.dietType.size() <= 40 &&
+             data.allergies is string && data.allergies.size() <= 120 &&
+             data.defaultServings is int && data.defaultServings >= 1 && data.defaultServings <= 20 &&
+             data.seededDefaults is bool &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidPantryItem(data) {
+      return data.name is string && data.name.size() >= 1 && data.name.size() <= 60 &&
+             data.quantity is int && data.quantity >= 0 && data.quantity <= 100000 &&
+             data.unit is string && data.unit.size() >= 1 && data.unit.size() <= 20 &&
+             data.stepDelta is int && data.stepDelta >= 1 && data.stepDelta <= 1000 &&
+             data.location is string && data.location.size() >= 1 && data.location.size() <= 40 &&
+             data.daysUntilExpiry is int && data.daysUntilExpiry >= 0 && data.daysUntilExpiry <= 3650 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 30 &&
+             data.lowThreshold is int && data.lowThreshold >= 0 && data.lowThreshold <= 10000 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidShoppingItem(data) {
+      return data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
+             data.checked is bool &&
+             data.sourceTag is string && data.sourceTag.size() >= 1 && data.sourceTag.size() <= 20 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidJournalNote(data) {
+      return data.recipeTitle is string && data.recipeTitle.size() >= 1 && data.recipeTitle.size() <= 80 &&
+             data.note is string && data.note.size() >= 1 && data.note.size() <= 500 &&
+             data.rating is number && data.rating >= 1.0 && data.rating <= 5.0 &&
+             data.dateLabel is string && data.dateLabel.size() >= 1 && data.dateLabel.size() <= 30 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidSavedRecipe(data) {
+      return data.title is string && data.title.size() >= 1 && data.title.size() <= 100 &&
+             data.description is string && data.description.size() <= 400 &&
+             data.durationMinutes is int && data.durationMinutes >= 1 && data.durationMinutes <= 360 &&
+             data.servings is int && data.servings >= 1 && data.servings <= 30 &&
+             data.difficulty is string && data.difficulty.size() >= 1 && data.difficulty.size() <= 30 &&
+             data.categoryName is string && data.categoryName.size() >= 1 && data.categoryName.size() <= 30 &&
+             data.isCustom is bool &&
+             data.caloriesKcal is int && data.caloriesKcal >= 0 && data.caloriesKcal <= 5000 &&
+             data.proteinGrams is int && data.proteinGrams >= 0 && data.proteinGrams <= 500 &&
+             data.carbsGrams is int && data.carbsGrams >= 0 && data.carbsGrams <= 500 &&
+             data.fatGrams is int && data.fatGrams >= 0 && data.fatGrams <= 500 &&
+             data.ingredientsSerialized is string && data.ingredientsSerialized.size() >= 1 && data.ingredientsSerialized.size() <= 8000 &&
+             data.stepsSerialized is string && data.stepsSerialized.size() >= 1 && data.stepsSerialized.size() <= 8000 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidMealPlanEntry(data) {
+      return data.dayOfWeek is string && data.dayOfWeek.size() >= 1 && data.dayOfWeek.size() <= 20 &&
+             data.mealSlot is string && data.mealSlot.size() >= 1 && data.mealSlot.size() <= 30 &&
+             data.recipeId is string && data.recipeId.size() >= 1 && data.recipeId.size() <= 128 &&
+             data.recipeTitle is string && data.recipeTitle.size() >= 1 && data.recipeTitle.size() <= 100 &&
+             data.servings is int && data.servings >= 1 && data.servings <= 30 &&
+             data.missingItemsSummary is string && data.missingItemsSummary.size() <= 400 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().keys().hasAll([
+                         'userId', 'displayName', 'email', 'dietType',
+                         'allergies', 'defaultServings', 'seededDefaults',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'displayName', 'email', 'dietType',
+                         'allergies', 'defaultServings', 'seededDefaults',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'displayName', 'email', 'dietType', 'allergies',
+                         'defaultServings', 'seededDefaults', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      match /pantry_items/{itemId} {
+        allow get: if isOwner(userId) && isValidId(itemId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(itemId) &&
+                         incoming().keys().hasAll([
+                           'name', 'quantity', 'unit', 'stepDelta',
+                           'location', 'daysUntilExpiry', 'category',
+                           'lowThreshold', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'name', 'quantity', 'unit', 'stepDelta',
+                           'location', 'daysUntilExpiry', 'category',
+                           'lowThreshold', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidPantryItem(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(itemId) &&
+                         isValidPantryItem(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'name', 'quantity', 'unit', 'stepDelta',
+                           'location', 'daysUntilExpiry', 'category',
+                           'lowThreshold', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(itemId);
+      }
+
+      match /shopping_items/{itemId} {
+        allow get: if isOwner(userId) && isValidId(itemId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(itemId) &&
+                         incoming().keys().hasAll([
+                           'name', 'checked', 'sourceTag', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'name', 'checked', 'sourceTag', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidShoppingItem(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(itemId) &&
+                         isValidShoppingItem(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'name', 'checked', 'sourceTag', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(itemId);
+      }
+
+      match /journal_notes/{noteId} {
+        allow get: if isOwner(userId) && isValidId(noteId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(noteId) &&
+                         incoming().keys().hasAll([
+                           'recipeTitle', 'note', 'rating', 'dateLabel', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'recipeTitle', 'note', 'rating', 'dateLabel', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidJournalNote(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(noteId) &&
+                         isValidJournalNote(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'recipeTitle', 'note', 'rating', 'dateLabel', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(noteId);
+      }
+
+      match /saved_recipes/{recipeId} {
+        allow get: if isOwner(userId) && isValidId(recipeId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(recipeId) &&
+                         incoming().keys().hasAll([
+                           'title', 'description', 'durationMinutes', 'servings',
+                           'difficulty', 'categoryName', 'isCustom', 'caloriesKcal',
+                           'proteinGrams', 'carbsGrams', 'fatGrams',
+                           'ingredientsSerialized', 'stepsSerialized', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'title', 'description', 'durationMinutes', 'servings',
+                           'difficulty', 'categoryName', 'isCustom', 'caloriesKcal',
+                           'proteinGrams', 'carbsGrams', 'fatGrams',
+                           'ingredientsSerialized', 'stepsSerialized', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidSavedRecipe(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(recipeId) &&
+                         isValidSavedRecipe(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'title', 'description', 'durationMinutes', 'servings',
+                           'difficulty', 'categoryName', 'isCustom', 'caloriesKcal',
+                           'proteinGrams', 'carbsGrams', 'fatGrams',
+                           'ingredientsSerialized', 'stepsSerialized', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(recipeId);
+      }
+
+      match /meal_plans/{planId} {
+        allow get: if isOwner(userId) && isValidId(planId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(planId) &&
+                         incoming().keys().hasAll([
+                           'dayOfWeek', 'mealSlot', 'recipeId', 'recipeTitle',
+                           'servings', 'missingItemsSummary', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'dayOfWeek', 'mealSlot', 'recipeId', 'recipeTitle',
+                           'servings', 'missingItemsSummary', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidMealPlanEntry(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(planId) &&
+                         isValidMealPlanEntry(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'dayOfWeek', 'mealSlot', 'recipeId', 'recipeTitle',
+                           'servings', 'missingItemsSummary', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(planId);
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Kitchen Solution</string>
+    <string name="auth_tagline">Pantau stok kulkas, temukan resep 100% cocok dari bahanmu, dan tanya Chef AI kapan saja.</string>
+    <string name="sign_in_with_google">Masuk Cepat dengan Google</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_chat">Chef AI</string>
+    <string name="nav_notes">Note</string>
+    <string name="nav_profile">Profile</string>
+    <string name="pantry_title">Smart Pantry</string>
+    <string name="pantry_subtitle">Kelola stok bahan &amp; pantau kedaluwarsa</string>
+    <string name="ai_matcher_title">AI Recipe Matcher</string>
+    <string name="ai_matcher_subtitle">Menu 100% cocok dengan stok bahan Anda saat ini</string>
+    <string name="explorer_title">Explorer Resep Dunia</string>
+    <string name="explorer_subtitle">Jelajahi seluruh jenis resep populer &amp; pencarian AI</string>
+    <string name="chat_title">Chef AI Assistant</string>
+    <string name="chat_subtitle">Tanya resep, teknik masak, gizi &amp; info bahan makanan</string>
+    <string name="notes_title">Catatan &amp; Belanja</string>
+    <string name="notes_subtitle">Jurnal resep rahasia &amp; daftar belanjaan</string>
+    <string name="cooking_mode_tag">Mode Masak Hands-Free</string>
+    <string name="saved_recipes_title">Favorit &amp; Resep Saya</string>
+    <string name="saved_recipes_subtitle">Koleksi resep tersimpan &amp; resep buatan sendiri</string>
+    <string name="meal_planner_title">Rencana Menu Mingguan</string>
+    <string name="meal_planner_subtitle">Jadwalkan masakan harian &amp; sinkronkan belanja otomatis</string>
+    <string name="sign_out">Keluar Akun</string>
+</resources>

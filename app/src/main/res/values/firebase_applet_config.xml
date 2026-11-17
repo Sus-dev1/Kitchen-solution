@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="firestore_database_id" translatable="false">ai-studio-android-kitchens-f9a62a03-5747-419f-902d-e35bbcd1b48b</string>
+    <string name="recaptcha_site_key" translatable="false">6LftMyQuAAAAAIyr3Rj3WSut6XPIXycq6N9iUrlS</string>
+</resources>

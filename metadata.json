@@ -1,0 +1,6 @@
+{
+  "name": "Kitchen Solution",
+  "description": "Smart kitchen assistant for pantry inventory, AI recipe matching, hands-free cooking mode, shopping lists, and cooking journals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
